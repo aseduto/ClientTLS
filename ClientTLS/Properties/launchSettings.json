@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ClientTLS": {
+      "commandName": "Project",
+      "workingDirectory": "A:\\Alessandro\\My Alx\\src\\tmp\\ClientTLS\\ClientTLS"
+    }
+  }
+}
