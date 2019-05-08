@@ -4,6 +4,9 @@ image:
   - Visual Studio 2017
   - Ubuntu
 
+environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
+
 
 
 build: off
@@ -13,10 +16,11 @@ build: off
 build_script:
     - sh: |
             cd ./ClientTLS
-            cp ca-server.pem /etc/ssl/certs
+            sudo cp ca-server.pem /etc/ssl/certs
             echo -e "GET / HTTP/1.1\r\nHost: fca-dme.westeurope.cloudapp.azure.com\r\nConnection: close\r\n\r\n" | openssl s_client -connect fca-dme.westeurope.cloudapp.azure.com:4443 -key ./openid-key.pem -cert ./openid.pem -quiet
             dotnet run
-    - cmd: |
+    - ps: |
+            Import-Certificate -FilePath ca-server.pem  -CertStoreLocation 'Cert:\LocalMachine\Root' -Verbose
             cd ./ClientTLS
             dotnet run
             
