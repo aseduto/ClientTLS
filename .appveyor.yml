@@ -1,0 +1,22 @@
+
+
+image: 
+  - Visual Studio 2017
+  - Ubuntu
+
+
+
+build: off
+    
+
+# to run your custom scripts instead of automatic MSBuild
+build_script:
+    - sh: |
+            cd ./ClientTLS
+            cp ca-server.pem /etc/ssl/certs
+            echo -e "GET / HTTP/1.1\r\nHost: fca-dme.westeurope.cloudapp.azure.com\r\nConnection: close\r\n\r\n" | openssl s_client -connect fca-dme.westeurope.cloudapp.azure.com:4443 -key ./openid-key.pem -cert ./openid.pem -quiet
+            dotnet run
+    - cmd: |
+            cd ./ClientTLS
+            dotnet run
+            
