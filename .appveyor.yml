@@ -20,7 +20,7 @@ build_script:
             echo -e "GET / HTTP/1.1\r\nHost: fca-dme.westeurope.cloudapp.azure.com\r\nConnection: close\r\n\r\n" | openssl s_client -connect fca-dme.westeurope.cloudapp.azure.com:4443 -key ./openid-key.pem -cert ./openid.pem -quiet
             dotnet run
     - ps: |
-            Import-Certificate -FilePath ca-server.pem  -CertStoreLocation 'Cert:\LocalMachine\Root' -Verbose
             cd ./ClientTLS
+            Import-Certificate -FilePath ca-server.pem  -CertStoreLocation 'Cert:\LocalMachine\Root' -Verbose
             dotnet run
             
