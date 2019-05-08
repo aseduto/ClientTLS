@@ -153,10 +153,12 @@ namespace ClientTLS
                 Task<int> t = TLS();
                 ok = t.Wait(10000);
 
+                /*
                 System.Console.Read();
 
                 t = TLS();
                 ok = t.Wait(10000);
+                */
 
             }
             else
