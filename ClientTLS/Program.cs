@@ -12,9 +12,9 @@ namespace ClientTLS
     class Program
     {
 
-        static string DNS = "fca-dme.westeurope.cloudapp.azure.com";
+        static string DNS = "admin.mediagoom.com";
         //static string DNS = "localhost";
-        static int PORT = 4443;
+        static int PORT = 80;
 
         // The following method is invoked by the RemoteCertificateValidationDelegate.
         public static bool ValidateServerCertificate(
@@ -169,7 +169,7 @@ namespace ClientTLS
                 //handler.ClientCertificates.Add(certificate);
 
                 SocketsHttpHandler handler = new SocketsHttpHandler();
-                handler.SslOptions = new SslClientAuthenticationOptions
+                /*handler.SslOptions = new SslClientAuthenticationOptions
                 {
                     //ApplicationProtocols = 
 
@@ -195,7 +195,7 @@ namespace ClientTLS
                 handler.AllowAutoRedirect = true;
                 handler.SslOptions.EncryptionPolicy = EncryptionPolicy.RequireEncryption;
 
-
+                */
                 //specify to use TLS 1.2 as default connection
                 //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                 //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
