@@ -12,9 +12,9 @@ namespace ClientTLS
     class Program
     {
 
-        static string DNS = "fca-dme.westeurope.cloudapp.azure.com";
+        static string DNS = "admin.mediagoom.com";
         //static string DNS = "localhost";
-        static int PORT = 4443;
+        static int PORT = 444;
 
         // The following method is invoked by the RemoteCertificateValidationDelegate.
         public static bool ValidateServerCertificate(

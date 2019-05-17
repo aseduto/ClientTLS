@@ -17,7 +17,8 @@ build_script:
     - sh: |
             cd ./ClientTLS
             sudo cp ca-server.pem /etc/ssl/certs
-            echo -e "GET / HTTP/1.1\r\nHost: fca-dme.westeurope.cloudapp.azure.com\r\nConnection: close\r\n\r\n" | openssl s_client -connect fca-dme.westeurope.cloudapp.azure.com:4443 -key ./openid-key.pem -cert ./openid.pem -quiet
+            sudo cp lets-encrypt-x3-cross-signed.pem.txt /etc/ssl/certs/lets-encrypt-x3-cross-signed.pem
+            echo -e "GET / HTTP/1.1\r\nHost: admin.mediagoom.com\r\nConnection: close\r\n\r\n" | openssl s_client -connect admin.mediagoom.com:444 -key ./openid-key.pem -cert ./openid.pem -quiet
             dotnet run
     - ps: |
             cd ./ClientTLS
