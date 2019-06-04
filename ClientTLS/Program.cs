@@ -37,15 +37,28 @@ namespace ClientTLS
 
         static X509CertificateCollection get_coll()
         {
-            X509Certificate x509Certificate = new X509Certificate("merged.pfx", "termoli");
+            X509Certificate2 x509Certificate = new X509Certificate2("merged.pfx", "termoli");
             X509CertificateCollection coll = new X509CertificateCollection();
             coll.Add(x509Certificate);
 
             return coll;
         }
 
+        static X509Certificate LocalCertificateSelectionCallback(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
+        {
+            foreach (X509Certificate certificate in localCertificates)
+            {
+                // TBD certificate selection
+                return certificate;
+            }
+
+            return null;
+        }
+
         static SslClientAuthenticationOptions get_ssl_options()
         {
+            X509Certificate2 cert = new X509Certificate2("merged.pfx", "termoli");
+
             SslClientAuthenticationOptions sslOptions =
             new SslClientAuthenticationOptions
                                {
@@ -55,7 +68,8 @@ namespace ClientTLS
                                     , EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12
                                     , AllowRenegotiation = true
                                     , TargetHost = DNS
-                                    , ApplicationProtocols = new System.Collections.Generic.List<SslApplicationProtocol>()
+                                    , LocalCertificateSelectionCallback = LocalCertificateSelectionCallback
+//                                    , ApplicationProtocols = new System.Collections.Generic.List<SslApplicationProtocol>()
 
                                };
 
@@ -64,9 +78,8 @@ namespace ClientTLS
                                sslOptions.ClientCertificates = get_coll();
                               
 
-                               sslOptions.ApplicationProtocols.Add(SslApplicationProtocol.Http2);
+//                               sslOptions.ApplicationProtocols.Add(SslApplicationProtocol.Http2);
 
-                               
 
            return sslOptions;
         }
@@ -93,10 +106,9 @@ namespace ClientTLS
                 System.Threading.CancellationToken cancellationToken = new System.Threading.CancellationToken();
 
                 SslClientAuthenticationOptions sslOptions = get_ssl_options();
+                await stream.AuthenticateAsClientAsync(sslOptions, cancellationToken);
 
-                //await stream.AuthenticateAsClientAsync(sslOptions, cancellationToken);
-
-                await stream.AuthenticateAsClientAsync(DNS, get_coll(), System.Security.Authentication.SslProtocols.Tls12, false);
+                //await stream.AuthenticateAsClientAsync(DNS, get_coll(), System.Security.Authentication.SslProtocols.Tls12, false);
 
                 string get = "GET / HTTP/1.1\r\nHost: fca-dme.westeurope.cloudapp.azure.com\r\nConnection: close\r\n\r\n";
 
@@ -151,7 +163,8 @@ namespace ClientTLS
             if (0 < args.Length)
             {
                 Task<int> t = TLS();
-                ok = t.Wait(10000);
+                ok = t.GetAwaiter().GetResult() == 0;
+//                ok = t.Wait(10000);
 
                 /*
                 System.Console.Read();
@@ -168,6 +181,8 @@ namespace ClientTLS
                 //X509Certificate2 certificate = GetMyX509Certificate();
                 //handler.ClientCertificates.Add(certificate);
 
+                Console.WriteLine("Going via HAndler!!!");
+
                 SocketsHttpHandler handler = new SocketsHttpHandler();
                 handler.SslOptions = new SslClientAuthenticationOptions
                 {
@@ -180,14 +195,16 @@ namespace ClientTLS
                     AllowRenegotiation = true
                      ,
                     TargetHost = DNS
-                     ,
-                    ApplicationProtocols = new System.Collections.Generic.List<SslApplicationProtocol>()
+//                     ,
+//                    ApplicationProtocols = new System.Collections.Generic.List<SslApplicationProtocol>()
+                    ,
+                    LocalCertificateSelectionCallback = LocalCertificateSelectionCallback
 
                 };
 
-                X509Certificate x509Certificate = new X509Certificate("merged.pfx", "termoli");
+                X509Certificate2 x509Certificate = new X509Certificate2("merged.pfx", "termoli");
 
-                handler.SslOptions.ApplicationProtocols.Add(SslApplicationProtocol.Http2);
+//                handler.SslOptions.ApplicationProtocols.Add(SslApplicationProtocol.Http2);
 
                 handler.SslOptions.ClientCertificates = new X509CertificateCollection();
                 handler.SslOptions.ClientCertificates.Add(x509Certificate);
@@ -195,7 +212,7 @@ namespace ClientTLS
                 handler.AllowAutoRedirect = true;
                 handler.SslOptions.EncryptionPolicy = EncryptionPolicy.RequireEncryption;
 
-
+                
                 //specify to use TLS 1.2 as default connection
                 //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                 //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -215,11 +232,8 @@ namespace ClientTLS
 
 
                 Task<string> res = httpClient.GetStringAsync("/");
-
-                ok = res.Wait(20000);
-
-                if(ok)
-                    response = res.Result;
+                response = res.GetAwaiter().GetResult();
+                ok = true;
             }
 
             if (ok)
